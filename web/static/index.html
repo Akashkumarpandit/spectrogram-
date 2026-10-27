@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpectraGuard | AASIST Voice Anti-Spoofing & Deepfake Detection</title>
+    <meta name="description" content="SpectraGuard: State-of-the-art voice anti-spoofing and audio deepfake detection system based on AASIST graph attention networks on ASVspoof 2019 and 2021 datasets.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-glows">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5v14M7 5v14M2 9v6M22 9v6"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="logo-title">SPECTRAGUARD <span class="badge-version">AASIST SOTA</span></h1>
+                    <p class="logo-subtitle">Voice Anti-Spoofing & Audio Deepfake Detection</p>
+                </div>
+            </div>
+            <div class="header-tags">
+                <span class="tech-tag"><span class="dot green"></span>ASVspoof 2019 + 2021</span>
+                <span class="tech-tag"><span class="dot purple"></span>SincNet + Hetero-GAT</span>
+                <span class="tech-tag"><span class="dot cyan"></span>AM-Softmax</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Top Info Banner -->
+        <section class="overview-banner">
+            <div class="banner-content">
+                <h2>Real-Time Deepfake Speech Biometric Analysis</h2>
+                <p>
+                    Trained across unified <strong>ASVspoof 2019 (LA/DF)</strong> and <strong>ASVspoof 2021 (LA/DF)</strong> protocols. 
+                    Uses end-to-end raw waveform processing to identify synthetic speech, neural vocoder artifacts, voice cloning, and replay attacks.
+                </p>
+            </div>
+            <div class="quick-samples">
+                <span class="quick-samples-label">Quick Test Presets:</span>
+                <button id="btn-sample-human" class="btn-preset" title="Load synthetic human voice sample">
+                    <span class="icon">👤</span> Sample Human (Bona Fide)
+                </button>
+                <button id="btn-sample-fake" class="btn-preset btn-preset-danger" title="Load synthetic deepfake voice sample">
+                    <span class="icon">🤖</span> Sample AI Deepfake (Spoof)
+                </button>
+            </div>
+        </section>
+
+        <!-- Input Section -->
+        <section class="card glass-panel input-card">
+            <div class="tabs-header">
+                <button class="tab-btn active" id="tab-btn-upload">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    Upload Audio File
+                </button>
+                <button class="tab-btn" id="tab-btn-record">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    Live Microphone Record
+                </button>
+            </div>
+
+            <div class="tab-content" id="tab-content-upload">
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="file-input" accept="audio/*,.wav,.flac,.mp3,.ogg,.m4a" hidden>
+                    <div class="drop-icon">
+                        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="drop-title">Drag & Drop Audio File Here</h3>
+                    <p class="drop-subtitle">Supports <strong>WAV, FLAC, MP3, OGG, M4A</strong> (Auto-resampled to 16 kHz mono)</p>
+                    <button class="btn btn-primary" id="btn-browse">Browse Files</button>
+                    <div class="selected-file-info" id="selected-file-info" style="display: none;">
+                        <span class="file-name" id="file-name-text">filename.wav</span>
+                        <span class="file-size" id="file-size-text">0.0 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-content-record" style="display: none;">
+                <div class="record-container">
+                    <div class="visualizer-wrapper">
+                        <canvas id="record-visualizer" width="600" height="100"></canvas>
+                    </div>
+                    <div class="record-controls">
+                        <button id="btn-record-toggle" class="btn-record">
+                            <span class="record-icon"></span>
+                            <span id="record-btn-text">Start Recording</span>
+                        </button>
+                        <div class="record-timer" id="record-timer">00:00</div>
+                    </div>
+                    <p class="record-hint">Speak naturally into your microphone for 3–5 seconds to test for biometric authenticity.</p>
+                </div>
+            </div>
+
+            <div class="action-footer">
+                <button class="btn btn-accent btn-lg" id="btn-analyze" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Run AASIST Verification</span>
+                </button>
+                <div class="loading-spinner" id="analyze-spinner" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Extracting spectro-temporal graph features...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section (Dynamic) -->
+        <section class="results-section" id="results-section" style="display: none;">
+            <!-- Verdict Banner -->
+            <div class="verdict-banner" id="verdict-banner">
+                <div class="verdict-status-icon" id="verdict-status-icon">
+                    <!-- Icon injected via JS -->
+                </div>
+                <div class="verdict-details">
+                    <div class="verdict-tag" id="verdict-tag">DETECTION VERDICT</div>
+                    <h2 class="verdict-heading" id="verdict-heading">AUTHENTIC HUMAN VOICE</h2>
+                    <p class="verdict-description" id="verdict-description">No synthetic speech artifacts or voice clone signatures detected.</p>
+                </div>
+                <div class="verdict-confidence-badge">
+                    <span class="badge-label">Confidence</span>
+                    <span class="badge-value" id="verdict-confidence">99.2%</span>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <!-- Gauge Card -->
+                <div class="card glass-panel gauge-card">
+                    <h3 class="card-title">Deepfake Risk Probability</h3>
+                    <div class="gauge-container">
+                        <svg class="radial-gauge" viewBox="0 0 120 120">
+                            <circle class="gauge-bg" cx="60" cy="60" r="50" />
+                            <circle class="gauge-fill" id="gauge-circle" cx="60" cy="60" r="50" />
+                        </svg>
+                        <div class="gauge-center-text">
+                            <span class="gauge-percent" id="gauge-percentage">0%</span>
+                            <span class="gauge-label">Spoof Risk</span>
+                        </div>
+                    </div>
+                    <div class="gauge-footer" id="gauge-risk-level">Risk Level: Low</div>
+                </div>
+
+                <!-- Probabilities & Scores -->
+                <div class="card glass-panel stats-card">
+                    <h3 class="card-title">Score Breakdown</h3>
+                    <div class="stat-row">
+                        <span class="stat-name">Bona Fide (Human) Prob:</span>
+                        <div class="stat-bar-wrapper">
+                            <div class="stat-bar bona-bar" id="bar-bonafide" style="width: 80%;"></div>
+                        </div>
+                        <span class="stat-val" id="val-bonafide-prob">80.0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-name">Deepfake (Spoof) Prob:</span>
+                        <div class="stat-bar-wrapper">
+                            <div class="stat-bar spoof-bar" id="bar-spoof" style="width: 20%;"></div>
+                        </div>
+                        <span class="stat-val" id="val-spoof-prob">20.0%</span>
+                    </div>
+                    <div class="score-divider"></div>
+                    <div class="meta-row">
+                        <span class="meta-label">AM-Softmax Decision Margin:</span>
+                        <span class="meta-value" id="val-margin">+1.842</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Audio Sample Duration:</span>
+                        <span class="meta-value" id="val-duration">3.40s</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Model Feature Extractor:</span>
+                        <span class="meta-value">SincNet (70 Mel filters)</span>
+                    </div>
+                </div>
+
+                <!-- Spectro-Temporal Graph Insight Card -->
+                <div class="card glass-panel insight-card">
+                    <h3 class="card-title">Spectro-Temporal Graph Insight</h3>
+                    <p class="insight-summary" id="insight-text">
+                        AASIST analyzed cross-domain attention between spectral subbands and temporal frames.
+                    </p>
+                    <div class="insight-checklist">
+                        <div class="insight-item" id="chk-vocoder">
+                            <span class="status-bullet"></span>
+                            <span>Vocoder Phase Continuity Check</span>
+                        </div>
+                        <div class="insight-item" id="chk-spectral">
+                            <span class="status-bullet"></span>
+                            <span>High-Frequency Spectral Decay</span>
+                        </div>
+                        <div class="insight-item" id="chk-temporal">
+                            <span class="status-bullet"></span>
+                            <span>Natural Formant Transition Consistency</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waveform & Playback Player -->
+            <div class="card glass-panel player-card">
+                <div class="player-header">
+                    <div class="player-info">
+                        <h4 id="player-filename">audio_sample.wav</h4>
+                        <span id="player-duration">00:00 / 00:00</span>
+                    </div>
+                    <button class="btn-play" id="btn-play-pause">
+                        <svg id="play-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
+                </div>
+                <div class="waveform-container">
+                    <canvas id="waveform-canvas" width="800" height="90"></canvas>
+                    <div class="waveform-progress-line" id="waveform-progress"></div>
+                </div>
+            </div>
+
+            <!-- GRAPHICAL COMPARISON SUITE: REAL VOICE VS FAKE VOICE -->
+            <div class="comparison-suite-card card glass-panel">
+                <div class="suite-header">
+                    <div class="suite-title-area">
+                        <span class="suite-badge">BIOMETRIC COMPARISON</span>
+                        <h3 class="suite-title">Acoustic Spectrum & Biometric Signature: Real Human vs AI Deepfake</h3>
+                        <p class="suite-subtitle">Direct graphical comparison of spectral roll-off, vocoder artifacts, and vocal tract dynamics</p>
+                    </div>
+                    <div class="suite-legend">
+                        <div class="legend-chip"><span class="legend-color-box bona"></span> Human Baseline (Real Voice)</div>
+                        <div class="legend-chip"><span class="legend-color-box audio"></span> Analyzed Audio (Current)</div>
+                        <div class="legend-chip"><span class="legend-color-box fake"></span> Deepfake / Vocoder Artifact Profile</div>
+                    </div>
+                </div>
+
+                <!-- 1. Interactive Frequency Spectrum & Difference Graph -->
+                <div class="chart-container-box">
+                    <div class="chart-subhead">
+                        <h4>Frequency Response Comparison (0 Hz – 8,000 Hz)</h4>
+                        <span class="subhead-tip">Highlights high-frequency vocoder hiss and formant flattening</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="spectrum-canvas" width="850" height="260"></canvas>
+                    </div>
+                    <div class="spectrum-freq-axis">
+                        <span>0 Hz</span>
+                        <span>500 Hz (F1 Formant)</span>
+                        <span>1.5 kHz (F2 Formant)</span>
+                        <span>3 kHz (F3 Formant)</span>
+                        <span>4.5 kHz (Vocoder Noise Band)</span>
+                        <span>8 kHz (Nyquist Limit)</span>
+                    </div>
+                </div>
+
+                <!-- 2. Dual Spectrogram Heatmaps (Side-by-Side Visual Comparison) -->
+                <div class="spectrogram-comparison-grid">
+                    <div class="spectro-card">
+                        <div class="spectro-header">
+                            <span class="spectro-title">BENCHMARK: Genuine Human Voice</span>
+                            <span class="spectro-tag bona">Natural Resonance</span>
+                        </div>
+                        <div class="spectro-canvas-wrapper">
+                            <canvas id="human-spectrogram-canvas" width="400" height="150"></canvas>
+                        </div>
+                        <p class="spectro-note">Displays smooth vocal tract formant curves, natural pitch vibrato, and standard high-frequency harmonic decay.</p>
+                    </div>
+
+                    <div class="spectro-card">
+                        <div class="spectro-header">
+                            <span class="spectro-title">ANALYZED: Uploaded Audio Spectrogram</span>
+                            <span class="spectro-tag" id="spectro-analysis-tag">Acoustic Scan</span>
+                        </div>
+                        <div class="spectro-canvas-wrapper">
+                            <canvas id="audio-spectrogram-canvas" width="400" height="150"></canvas>
+                        </div>
+                        <p class="spectro-note" id="spectro-analysis-note">AASIST graph attention layers inspect spectro-temporal nodes for neural vocoder combs and frame discontinuities.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Biometric Differential Comparison Bars -->
+                <div class="biometric-diff-section">
+                    <h4 class="diff-title">5-Axis Biometric Differential Analysis</h4>
+                    <div class="diff-grid" id="diff-grid-container">
+                        <!-- Populated dynamically via app.js -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Specifications & Pipeline Reference -->
+        <section class="card glass-panel specs-card">
+            <h3 class="card-title">System Architecture & Dataset Coverage</h3>
+            <div class="specs-grid">
+                <div class="spec-column">
+                    <h4>ASVspoof 2019 & 2021 Dataset Specs</h4>
+                    <ul>
+                        <li><strong>Track LA (Logical Access):</strong> Speech synthesis (TTS: Tacotron, FastSpeech) and Voice Conversion (VCC) attacks.</li>
+                        <li><strong>Track DF (Deepfake):</strong> Lossy compressed speech, MP3/AAC/Opus codecs at variable bitrates.</li>
+                        <li><strong>Track PA (Physical Access):</strong> Acoustic room reverberation & microphone replay attacks.</li>
+                        <li><strong>Standard Metrics:</strong> Equal Error Rate (EER) and minimum tandem DCF (min t-DCF).</li>
+                    </ul>
+                </div>
+                <div class="spec-column">
+                    <h4>AASIST Model Pipeline</h4>
+                    <ul>
+                        <li><strong>Front-End:</strong> Learnable SincNet band-pass filterbank directly on raw waveforms ($64,600$ samples).</li>
+                        <li><strong>2D CNN Encoder:</strong> 4 Residual Convolutional blocks extracting spectro-temporal feature maps.</li>
+                        <li><strong>Graph Attention Network:</strong> Spectral and Temporal Graph Attention Layers with Graph Pooling.</li>
+                        <li><strong>Heterogeneous Fusion:</strong> Bidirectional cross-attention uniting time & frequency graphs into master embeddings.</li>
+                        <li><strong>Loss Criterion:</strong> Additive Margin Softmax (AM-Softmax, margin $m=0.2$, scale $s=30$).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>SpectraGuard • AASIST Audio Anti-Spoofing & Deepfake Detection Suite • Built with PyTorch, FastAPI & WebAudio</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

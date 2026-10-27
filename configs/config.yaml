@@ -1,0 +1,78 @@
+# Master Configuration for Combined ASVspoof 2019 + 2021 Deepfake Detection
+
+project_name: "asvspoof_aasist_combined"
+seed: 42
+device: "auto" # "cuda", "mps", "cpu", or "auto"
+
+dataset:
+  sample_rate: 16000
+  num_samples: 64600 # ~4.04s standard AASIST length
+  pad_mode: "repeat" # "repeat" or "zero"
+  slice_mode_train: "random"
+  slice_mode_eval: "center"
+  
+  # Combined protocol paths (can specify multiple for 2019 & 2021)
+  protocols:
+    train:
+      - path: "./data/asvspoof2019/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.train.trn.txt"
+        audio_dir: "./data/asvspoof2019/LA/ASVspoof2019_LA_train/flac"
+        dataset_version: "2019"
+      - path: "./data/asvspoof2019/DF/ASVspoof2019_DF_cm_protocols/ASVspoof2019.DF.cm.train.trn.txt"
+        audio_dir: "./data/asvspoof2019/DF/ASVspoof2019_DF_train/flac"
+        dataset_version: "2019"
+        
+    dev:
+      - path: "./data/asvspoof2019/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.dev.trl.txt"
+        audio_dir: "./data/asvspoof2019/LA/ASVspoof2019_LA_dev/flac"
+        dataset_version: "2019"
+        
+    eval:
+      # ASVspoof 2019 Eval
+      - path: "./data/asvspoof2019/LA/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm.eval.trl.txt"
+        audio_dir: "./data/asvspoof2019/LA/ASVspoof2019_LA_eval/flac"
+        dataset_version: "2019"
+      # ASVspoof 2021 Eval
+      - path: "./data/asvspoof2021/LA/ASVspoof2021_LA_eval/keys/LA/CM/trial_metadata.txt"
+        audio_dir: "./data/asvspoof2021/LA/ASVspoof2021_LA_eval/flac"
+        dataset_version: "2021"
+      - path: "./data/asvspoof2021/DF/ASVspoof2021_DF_eval/keys/DF/CM/trial_metadata.txt"
+        audio_dir: "./data/asvspoof2021/DF/ASVspoof2021_DF_eval/flac"
+        dataset_version: "2021"
+
+  # Data augmentation
+  augmentation:
+    enabled: true
+    rawboost:
+      algo: 5 # 1: LN (Linear non-linear), 2: ISD (Impulsive signal-dependent), 3: SSI (Stationary signal-independent), 4: Series, 5: Parallel
+      snr_min: 10
+      snr_max: 40
+
+model:
+  architecture: "AASIST" # "AASIST" or "AASIST-L"
+  nb_samp: 64600
+  first_conv: 128 # SincNet filter length
+  filts: [70, [1, 32], [32, 32], [32, 64], [64, 64]]
+  gat_dims: [64, 32]
+  pool_ratios: [0.5, 0.7, 0.5, 0.5]
+  temperatures: [2.0, 2.0, 100.0, 100.0]
+
+loss:
+  type: "AMSoftmax" # "AMSoftmax" or "CCE"
+  margin: 0.2
+  scale: 30.0
+  class_weights: [0.1, 0.9] # [spoof_weight, bonafide_weight] - bona fide is rare
+
+training:
+  batch_size: 24
+  num_workers: 0
+  epochs: 50
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  lr_decay_step: 10
+  lr_decay_gamma: 0.5
+  mixed_precision: true
+  gradient_clip: 5.0
+  early_stopping_patience: 15
+  checkpoint_dir: "./checkpoints"
+  save_best_only: false
+  eval_frequency: 1 # Validate every N epochs

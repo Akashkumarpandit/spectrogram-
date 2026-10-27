@@ -1,0 +1,10 @@
+LA_300 LA_E_3000000 alaw g722 ip - bonafide eval
+LA_301 LA_E_3000001 alaw g722 ip A17 spoof eval
+LA_302 LA_E_3000002 alaw g722 ip - bonafide eval
+LA_303 LA_E_3000003 alaw g722 ip A14 spoof eval
+LA_304 LA_E_3000004 alaw g722 ip - bonafide eval
+LA_300 LA_E_3000005 alaw g722 ip A13 spoof eval
+LA_301 LA_E_3000006 alaw g722 ip - bonafide eval
+LA_302 LA_E_3000007 alaw g722 ip A19 spoof eval
+LA_303 LA_E_3000008 alaw g722 ip - bonafide eval
+LA_304 LA_E_3000009 alaw g722 ip A19 spoof eval

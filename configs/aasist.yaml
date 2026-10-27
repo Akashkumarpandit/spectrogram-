@@ -1,0 +1,51 @@
+# AASIST Architecture Configuration Details
+
+aasist:
+  architecture: "AASIST"
+  sample_rate: 16000
+  nb_samp: 64600
+  
+  # SincNet front-end
+  sinc_conv:
+    out_channels: 70
+    kernel_size: 128
+    stride: 1
+    sample_rate: 16000
+    min_low_hz: 0
+    min_band_hz: 50
+    
+  # Residual Convolutional Blocks
+  encoder:
+    filts: [70, [1, 32], [32, 32], [32, 64], [64, 64]]
+    
+  # Graph Attention Network
+  gat:
+    gat_dims: [64, 32]
+    pool_ratios: [0.5, 0.7, 0.5, 0.5]
+    temperatures: [2.0, 2.0, 100.0, 100.0]
+    num_heads: 4
+    
+  # Classifier
+  classifier:
+    hidden_dim: 160
+    num_classes: 2 # 0: spoof, 1: bonafide
+    dropout: 0.1
+
+aasist_light:
+  architecture: "AASIST-L"
+  sample_rate: 16000
+  nb_samp: 64600
+  sinc_conv:
+    out_channels: 70
+    kernel_size: 128
+  encoder:
+    filts: [70, [1, 16], [16, 16], [16, 32], [32, 32]]
+  gat:
+    gat_dims: [32, 16]
+    pool_ratios: [0.5, 0.5, 0.5, 0.5]
+    temperatures: [2.0, 2.0, 100.0, 100.0]
+    num_heads: 2
+  classifier:
+    hidden_dim: 80
+    num_classes: 2
+    dropout: 0.1

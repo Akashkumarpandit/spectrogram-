@@ -1,0 +1,10 @@
+LA_200 LA_D_2000000 - A17 spoof
+LA_201 LA_D_2000001 - - bonafide
+LA_202 LA_D_2000002 - A16 spoof
+LA_203 LA_D_2000003 - - bonafide
+LA_204 LA_D_2000004 - A10 spoof
+LA_200 LA_D_2000005 - - bonafide
+LA_201 LA_D_2000006 - A15 spoof
+LA_202 LA_D_2000007 - - bonafide
+LA_203 LA_D_2000008 - A17 spoof
+LA_204 LA_D_2000009 - - bonafide
