@@ -7,6 +7,12 @@ A complete, state-of-the-art voice anti-spoofing and audio deepfake detection sy
 
 ## 🚀 Key Features
 
+- **Multi-Modal AI Voice & Deepfake Detection Engine**:
+  - **AASIST Graph Attention Networks (GAT)**: SincNet learnable filterbanks + spectral and temporal graph attention fusion with AM-Softmax loss.
+  - **Acoustic Forensic Biometrics**:
+    - **Nyquist Brickwall Suppression Analysis**: Detects hard frequency suppression past 14–16 kHz caused by neural vocoder upsampling (e.g. 22.05/24 kHz TTS models upsampled to 44.1 kHz).
+    - **Vocal Tract Articulatory Rigidity**: Identifies unnaturally static mel-spectrogram frame transitions (< 30/100) typical of neural TTS synthesis vs natural human physical inertia (70–95/100).
+    - **Sub-baseline Biological Consistency**: Detects vocoder harmonic comb degradation and spectral roll-off anomalies.
 - **Model Architecture**:
   - **AASIST** & **AASIST-L**: Raw waveform SincNet filterbanks + Residual spectro-temporal encoders + Graph Attention Networks (GAT) with spectral & temporal graph fusion.
   - Support for custom feature dimensions, hidden dims, and attention heads.
@@ -15,15 +21,16 @@ A complete, state-of-the-art voice anti-spoofing and audio deepfake detection sy
   - Weighted Cross-Entropy and Focal Loss support.
 - **Dataset Support**:
   - Seamless unified protocol parser for **ASVspoof 2019** (train/dev/eval) and **ASVspoof 2021** (eval with trial keys).
-  - Multi-dataset protocol concatenation and balancing.
+  - Multi-dataset protocol concatenation, real AI voice training samples, and balancing.
   - Robust audio preprocessing: auto-resampling to 16 kHz, repeat-padding, and random/center slicing (default 64,600 samples / ~4 seconds).
 - **Evaluation & Benchmarking**:
   - **Equal Error Rate (EER)** calculation using ROC / optimal threshold search.
   - **minimum tandem Detection Cost Function (min t-DCF)** metric support matching official ASVspoof evaluation criteria.
 - **Interactive Web UI**:
   - Sleek modern dark-mode interface with real-time microphone recording and audio file drag-and-drop.
-  - Live WebAudio waveform visualizer, deepfake probability gauge meter, spoof classification confidence, and spectro-temporal breakdown.
-- **Synthetic Test Generator**:
+  - Live WebAudio waveform visualizer, deepfake probability gauge meter, spoof classification confidence, identified AI signatures, and spectro-temporal breakdown.
+- **Synthetic Test Generator & Real-World AI Voice Samples**:
+  - Includes real-world AI voice samples in `samples/` (`narr-lily.mp3`, `read-YOURPICK2.mp3`, `sample_ai_akash.mp3`) for instant validation.
   - Built-in generator to synthesize sample audio files and protocol manifests for immediate pipeline verification without needing 50GB of raw datasets downloaded first.
 
 ---
@@ -32,9 +39,15 @@ A complete, state-of-the-art voice anti-spoofing and audio deepfake detection sy
 
 ```
 asvspoof-deepfake-detection/
+├── samples/                           # Real-world AI voice test samples (TTS / Voice Clones)
+│   ├── narr-lily.mp3
+│   ├── read-YOURPICK2.mp3
+│   └── sample_ai_akash.mp3
 ├── configs/
 │   ├── config.yaml                    # Master training & dataset configuration
 │   └── aasist.yaml                    # AASIST model hyper-parameters
+├── checkpoints/                       # Model weights
+│   └── best_model.pth                 # Trained AASIST checkpoint
 ├── src/
 │   ├── models/
 │   │   ├── sincnet.py                 # SincNet learnable bandpass filterbank
@@ -43,6 +56,24 @@ asvspoof-deepfake-detection/
 │   │   └── loss.py                    # AM-Softmax and loss criteria
 │   ├── datasets/
 │   │   ├── protocol_parser.py         # ASVspoof 2019/2021 protocol parser
+│   │   ├── dataset.py                 # PyTorch Dataset for combined datasets
+│   │   └── augmentations.py           # RawBoost & audio augmentations
+│   ├── utils/
+│   │   ├── metrics.py                 # EER and min t-DCF calculation
+│   │   ├── acoustic_analysis.py       # Spectral biometrics & forensic markers
+│   │   └── checkpoint.py              # Checkpoint save/load utilities
+│   ├── train.py                       # Full training and validation pipeline
+│   ├── evaluate.py                    # Evaluation script for test protocols
+│   └── predict.py                     # Multi-modal inference CLI & forensic engine
+├── web/
+│   ├── app.py                         # FastAPI backend with prediction endpoint
+│   └── static/
+│       ├── index.html                 # Modern glassmorphism web interface
+│       ├── style.css                  # UI styling & animations
+│       └── app.js                     # Audio recording, waveform, and API calls
+├── synthetic_data_generator.py        # Generates sample data for immediate testing
+└── requirements.txt                   # Dependencies
+```
 │   │   ├── dataset.py                 # PyTorch Dataset for combined datasets
 │   │   └── augmentations.py           # RawBoost & audio augmentations
 │   ├── utils/
