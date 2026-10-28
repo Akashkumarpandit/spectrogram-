@@ -346,14 +346,21 @@ function displayResults(data) {
     const chkVocoder = document.getElementById("chk-vocoder");
     const chkSpectral = document.getElementById("chk-spectral");
     const chkTemporal = document.getElementById("chk-temporal");
+    const insightText = document.getElementById("insight-text");
     if (isSpoof) {
         chkVocoder.className = "insight-item warn";
         chkSpectral.className = "insight-item warn";
-        chkTemporal.className = "insight-item";
+        chkTemporal.className = "insight-item warn";
+        if (pred.detected_artifacts && pred.detected_artifacts.length > 0) {
+            insightText.innerHTML = `<strong>Identified AI Voice Signatures:</strong><br>• ` + pred.detected_artifacts.join("<br>• ");
+        } else {
+            insightText.textContent = "AASIST spectro-temporal graph detected synthetic neural vocoder and phase distortion signatures.";
+        }
     } else {
         chkVocoder.className = "insight-item";
         chkSpectral.className = "insight-item";
         chkTemporal.className = "insight-item";
+        insightText.textContent = "AASIST confirmed natural biological vocal tract formants and smooth articulatory dynamics.";
     }
 
     // Player setup
